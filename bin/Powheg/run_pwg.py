@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 '''
 Script for POWHEG generator production
@@ -319,13 +319,13 @@ fi
 
 # 5F
 is5FlavorScheme=1
-defaultPDF=306000
+defaultPDF=325300
 
 
 if [[ "$process" == "ST_tch_4f" ]] || [[ "$process" == "bbH" ]] || [[ "$process" == "Wbb_dec" ]] || [[ "$process" == "Wbbj" ]] || [[ "$process" == "WWJ" ]]; then
     # 4F
     is5FlavorScheme=0
-    defaultPDF=320900
+    defaultPDF=325500
 fi
 
 if [[ $is5FlavorScheme -eq 1 ]]; then
@@ -362,7 +362,7 @@ if [[ -s ./JHUGen.input ]]; then
 fi
 
 ### retrieve the powheg source tar ball
-export POWHEGSRC=powhegboxV2_rev3592_date20180904.tar.gz
+export POWHEGSRC=powhegboxV2_rev3728_date20200429.tar.gz
 
 if [ "$process" = "b_bbar_4l" ] || [ "$process" = "HWJ_ew" ] || [ "$process" = "HW_ew" ] || [ "$process" = "HZJ_ew" ] || [ "$process" = "HZ_ew" ]; then 
   export POWHEGSRC=powhegboxRES_rev3478_date20180122.tar.gz 
@@ -409,6 +409,9 @@ if [ "$process" = "WWJ" ]; then
     cp ${WORKDIR}/patches/rwl_write_weights2_extra.f POWHEG-BOX/$process/
 fi
 
+if [ "$process" = "bbH" ]; then
+    patch POWHEG-BOX/${process}/Born_phsp.f -l -p0 -i ${WORKDIR}/patches/born_phsp.patch
+fi
 
 sed -i -e "s#500#1200#g"  POWHEG-BOX/include/pwhg_rwl.h
 
@@ -1245,10 +1248,10 @@ if __name__ == "__main__":
             test_pdf1 = 0
             test_pdf2 = 0
 
-            default_pdf = "306000"  # for 5 flavours
+            default_pdf = "325300"  # for 5 flavours
 
             if args.prcName=="ST_tch_4f" or args.prcName=="bbH" or args.prcName=="Wbb_dec" or args.prcName=="Wbbj" :
-                default_pdf = "320900"  # for 4 flavours
+                default_pdf = "325500"  # for 4 flavours
 
             for line in open(args.folderName+'/powheg.input') :
                 n_column = line.split()
@@ -1262,7 +1265,7 @@ if __name__ == "__main__":
 
             if test_pdf1 != default_pdf :
 #                print "PDF in card: ", test_pdf1, "PDF default: ", default_pdf, test_pdf1==default_pdf
-                message = "The input card does not have the standard 2017 PDF (NNPDF31 NNLO, 306000 for 5F, 320900 for 4F): {0}. Either change the card or run again with -d 1 to ignore this message.\n".format(test_pdf1)
+                message = "The input card does not have the standard Ultralegacy PDF (NNPDF31 NNLO, 325300 for 5F, 325500 for 4F): {0}. Either change the card or run again with -d 1 to ignore this message.\n".format(test_pdf1)
 
                 if args.noPdfCheck == '0' :
                     raise RuntimeError(message)
